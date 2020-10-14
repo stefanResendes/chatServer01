@@ -25,18 +25,32 @@ io.sockets.on('connection', function (socket) {
   });
 
   socket.on('chat_message', function (message) {
-    /* console.log(socket.username + ' sent to ' + socket.room); */
+    console.log(socket.username + ' sent to ' + socket.room);
     io.sockets.in(socket.room).emit('chat_return', message);
   });
 
   socket.on('switchRoom', function (newRoom) {
-    socket.leave(socket.room);
-    /* console.log(socket.username + ' left room ' + socket.room); */
-    socket.join(newRoom);
-    socket.room = newRoom;
-    /* console.log(socket.username + " joined " + socket.room); */
+    changeRoom(newRoom);
   });
+
+  socket.on('directMessage', function (contact) {
+    console.log(contact);
+    /* changeRoom(newRoom); */
+  });
+
+  const changeRoom = (room) => {
+    if (room === '') {
+      room = 'group';
+    }
+    socket.leave(socket.room);
+    console.log(socket.username + " left room " + socket.room);
+    socket.join(room);
+    socket.room = room;
+    console.log(socket.username + " joined " + socket.room);
+  };
+
 });
+
 
 
 const server = http.listen(9090, function () {
