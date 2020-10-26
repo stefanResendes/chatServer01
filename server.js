@@ -2,6 +2,15 @@ const express = require('express');
 const app = express();
 const http = require('http').Server(app);
 const io = require('socket.io')(http);
+/* Start picture server declarations */
+const pictureRoutes = express.Router();
+const cors = require('cors');
+const bodyParser = require("body-parser");
+const port = 3000;
+
+app.use(cors());
+app.use(bodyParser.json());
+/* End picture server declarations */
 
 app.get('/', function (req, res) {
   /* res.render('index.ejs'); */
@@ -51,8 +60,18 @@ io.sockets.on('connection', function (socket) {
 
 });
 
-
-
 const server = http.listen(9090, function () {
   console.log('listening on *:9090');
 });
+
+/* Start of the picture server stuff */
+pictureRoutes.route('/add').post(function(req, res) {
+  console.log(req);
+});
+
+app.use('/picture', pictureRoutes);
+
+app.listen(port, () =>
+  console.log(`picture listening at http://localhost:${port}`)
+);
+/* End of the picture server stuff */
