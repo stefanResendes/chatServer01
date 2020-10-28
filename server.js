@@ -7,9 +7,11 @@ const pictureRoutes = express.Router();
 const cors = require('cors');
 const bodyParser = require("body-parser");
 const port = 3000;
+const formidable = require('formidable');
+const util = require('util');
 
 app.use(cors());
-app.use(bodyParser.json());
+/* app.use(bodyParser.json()); */
 /* End picture server declarations */
 
 app.get('/', function (req, res) {
@@ -67,11 +69,28 @@ const server = http.listen(9090, function () {
 /* Start of the picture server stuff */
 pictureRoutes.route('/add').post(function(req, res) {
   console.log(req);
+  var form = new formidable.IncomingForm();
+  form.parse(req, function(err, fields, files) {
+    console.log('Files', files);
+    console.log(files.file.path);
+    if (err) {
+      console.error(err.message);
+      res.writeHead(200, { "content-type": "text/plain" });
+      res.write("upload failed");
+
+      res.end();
+    } else {
+      res.writeHead(200, {'content-type': 'text/plain'});
+      res.write('received upload:\n\n');
+
+      res.end(util.inspect({fields: fields, files: files}));
+    }
+  });
 });
 
 app.use('/picture', pictureRoutes);
 
 app.listen(port, () =>
-  console.log(`picture listening at http://localhost:${port}`)
+  console.log(`picture listening on ${port}`)
 );
 /* End of the picture server stuff */
